@@ -57,36 +57,36 @@ void update_board(){
     generate_row();
 }
 
-int up (player me) {
-    me.sign = '#';
-    print_board(&me);
-    me.score += turn;
+int up (player* me) {
+    me->sign = '#';
+    print_board(me);
+    me->score += turn;
     Sleep(time);
-    printf("\nScore: %d\n", me.score);
+    printf("\nTurn: %d    Score: %d\n", turn, me->score);
     if(time > MIN_TIME){
         time -= turn;
     }
         turn++;
     update_board();
-    me.sign = '*';
-    print_board(&me);
-    return board[0][me.column] != '^';
+    me->sign = '*';
+    print_board(me);
+    return board[0][me->column] != '^';
 }
 
-int down (player me) {
-    me.sign = '-';
-    print_board(&me);
-    me.score += turn;
+int down (player* me) {
+    me->sign = '-';
+    print_board(me);
+    me->score += turn;
     Sleep(time);
-    printf("\nScore: %d\n", me.score);
+    printf("\nTurn: %d    Score: %d\n", turn, me->score);
     if(time > MIN_TIME){
          time -= turn;
     }
         turn++;
     update_board();
-    me.sign = '*';
-    print_board(&me);
-    return board[0][me.column] != '^';
+    me->sign = '*';
+    print_board(me);
+    return board[0][me->column] != '^';
 }
 
 int left (player* me) {
@@ -95,7 +95,7 @@ int left (player* me) {
     if(me->column == 0){
         me->score += turn;
         Sleep(time);
-        printf("\nScore: %d\n", me->score);
+        printf("\nTurn: %d    Score: %d\n", turn, me->score);
         if(time > MIN_TIME){
             time -= turn;
         }
@@ -113,7 +113,7 @@ int right (player* me) {
     if(me->column == 4){
         me->score += turn;
         Sleep(time);
-        printf("\nScore: %d\n", me->score);
+        printf("\nTurn: %d    Score: %d\n", turn, me->score);
         if(time > MIN_TIME){
             time -= turn;
         }
@@ -148,7 +148,7 @@ int main () {
         if(turn){
             Sleep(time);
         }
-        printf("\nScore: %d\n", me.score);
+        printf("\nTurn: %d    Score: %d\n", turn, me.score);
         if(time > MIN_TIME){
             time -= turn;
         }
@@ -158,10 +158,10 @@ int main () {
             int keystroke = getch();
             switch (keystroke) {
                 case 'w':
-                    alive = up(me);
+                    alive = up(&me);
                     break;
                 case 's':
-                    alive = down(me);
+                    alive = down(&me);
                     break;
                 case 'a':
                     alive = left(&me);
