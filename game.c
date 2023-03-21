@@ -49,15 +49,15 @@ void generate_row (){
     num2 = num2?' ':'X';
     char num3 = (rand() % 3);
     num3 = num3?' ':'X';
+    //avoid impossible boards, under construction
+    if(board[4][1] == 'X' && board[4][2] == 'X' && board[4][3] == 'X' && num1 == 'X' && num2 == 'X' && num3 == 'X'){
+        num2 = ' ';
+    }
     board[5][0] = ' ';
     board[5][1] = num1;
     board[5][2] = num2;
     board[5][3] = num3;
     board[5][4] = ' ';
-    //avoid impossible boards, under construction
-    if(board[4][1] == 'X' && board[4][2] == 'X' && board[4][3] == 'X' && num1 == 'X' && num2 == 'X' && num3 == 'X'){
-        board[5][2] == ' ';
-    }
 }
 
 void update_board(){
