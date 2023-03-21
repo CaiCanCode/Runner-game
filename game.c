@@ -9,9 +9,11 @@
 #include <conio.h>
 #include <windows.h>
 #include <string.h>
+#include <stdlib.h>
+#include <time.h>
 
 const int MIN_TIME = 400;
-int time = 1500;
+int wait_time = 1500;
 int turn = 0;
 
 typedef struct player{
@@ -35,6 +37,8 @@ void print_board(player* me){
 }
 
 void generate_row (){
+    time_t t;
+    srand((unsigned) time(&t)); //Use system time to generate random numbers
     char num1 = (rand() % 3);
     num1 = num1?' ':'X';
     char num2 = (rand() % 3);
@@ -61,10 +65,10 @@ int up (player* me) {
     me->sign = '#';
     print_board(me);
     me->score += turn;
-    Sleep(time);
+    Sleep(wait_time);
     printf("\nTurn: %d    Score: %d\n", turn, me->score);
-    if(time > MIN_TIME){
-        time -= turn;
+    if(wait_time > MIN_TIME){
+        wait_time -= turn;
     }
         turn++;
     update_board();
@@ -77,10 +81,10 @@ int down (player* me) {
     me->sign = '-';
     print_board(me);
     me->score += turn;
-    Sleep(time);
+    Sleep(wait_time);
     printf("\nTurn: %d    Score: %d\n", turn, me->score);
-    if(time > MIN_TIME){
-         time -= turn;
+    if(wait_time > MIN_TIME){
+        wait_time -= turn;
     }
         turn++;
     update_board();
@@ -94,10 +98,10 @@ int left (player* me) {
     print_board(me);
     if(me->column == 0){
         me->score += turn;
-        Sleep(time);
+        Sleep(wait_time);
         printf("\nTurn: %d    Score: %d\n", turn, me->score);
-        if(time > MIN_TIME){
-            time -= turn;
+        if(wait_time > MIN_TIME){
+            wait_time -= turn;
         }
         turn++;
         update_board();
@@ -112,10 +116,10 @@ int right (player* me) {
     print_board(me);
     if(me->column == 4){
         me->score += turn;
-        Sleep(time);
+        Sleep(wait_time);
         printf("\nTurn: %d    Score: %d\n", turn, me->score);
-        if(time > MIN_TIME){
-            time -= turn;
+        if(wait_time > MIN_TIME){
+            wait_time -= turn;
         }
         turn++;
         update_board();
@@ -146,11 +150,11 @@ int main () {
     while(alive){
         me.score += turn;
         if(turn){
-            Sleep(time);
+            Sleep(wait_time);
         }
         printf("\nTurn: %d    Score: %d\n", turn, me.score);
-        if(time > MIN_TIME){
-            time -= turn;
+        if(wait_time > MIN_TIME){
+            wait_time -= turn;
         }
         turn++;
         update_board();
@@ -186,7 +190,7 @@ int main () {
         }
         if(!alive && !strcmp(isAdmin, "admin\n")){
             printf("You should be dead lol but you're an immortal admin.\nResetting timer");
-            time = 1500;
+            wait_time = 1500;
             alive = 1;
         }
     }
