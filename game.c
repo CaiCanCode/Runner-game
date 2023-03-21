@@ -50,6 +50,10 @@ void generate_row (){
     board[5][2] = num2;
     board[5][3] = num3;
     board[5][4] = ' ';
+    //avoid impossible boards, under construction
+    if(board[4][1] == 'X' && board[4][2] == 'X' && board[4][3] == 'X' && num1 == 'X' && num2 == 'X' && num3 == 'X'){
+        board[5][2] == ' ';
+    }
 }
 
 void update_board(){
