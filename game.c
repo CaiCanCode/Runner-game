@@ -73,19 +73,17 @@ void left (player* me) {
     me->column -= 1;
     print_board(me);
     if(me->column == 0){
-        if(me->sign == '*'){
-            me->score += turn;
-            Sleep(wait_time);
-            printf("\nTurn: %d    Score: %d\n", turn, me->score);
-            if(wait_time > MIN_TIME){
-                wait_time -= turn;
-            }
-            turn++;
-            update_board();
-        }else{
+        if(me->sign != '*'){
             me->sign = '*';
-            board[0][0] = ' ';
         }
+        me->score += turn;
+        Sleep(wait_time);
+        printf("\nTurn: %d    Score: %d\n", turn, me->score);
+        if(wait_time > MIN_TIME){
+            wait_time -= turn;
+        }
+        turn++;
+        update_board();
         me->column = 1;
         print_board(me);
     }
@@ -95,19 +93,17 @@ void right (player* me) {
     me->column += 1;
     print_board(me);
     if(me->column == 4){
-        if(me->sign == '*'){
-            me->score += turn;
-            Sleep(wait_time);
-            printf("\nTurn: %d    Score: %d\n", turn, me->score);
-            if(wait_time > MIN_TIME){
-                wait_time -= turn;
-            }
-            turn++;
-            update_board();
-        }else{
+        if(me->sign != '*'){
             me->sign = '*';
-            board[0][4] = ' ';
         }
+        me->score += turn;
+        Sleep(wait_time);
+        printf("\nTurn: %d    Score: %d\n", turn, me->score);
+        if(wait_time > MIN_TIME){
+            wait_time -= turn;
+        }
+        turn++;
+        update_board();
         me->column = 3;
         print_board(me);
     }
@@ -127,18 +123,36 @@ void up (player* me) {
     if (kbhit()){
             int keystroke = getch();
             switch (keystroke) {
+                int e = 0;
                 case 'a':
+                    if(me->column == 1){
+                        e = 1;
+                    }
                     left(me);
+                    if(e){
+                        me->sign = '*';
+                        return;
+                    }
                     break;
                 case 'd':
+                    if(me->column == 3){
+                        e = 1;
+                    }
                     right(me);
+                    if(e){
+                        me->sign = '*';
+                        return;
+                    }
                     break;
                 case 'c':
+                    print_board(me);
                     printf("Game paused. Press enter to continue");
                     getchar();
-                    break;
+                    me->sign = '*';
+                    return;
                 case 'x':
-                printf("game ended\n");
+                    print_board(me);
+                    printf("game ended\n");
                     exit(0);
             }
     }
@@ -160,18 +174,36 @@ void down (player* me) {
     if (kbhit()){
             int keystroke = getch();
             switch (keystroke) {
+                int e = 0;
                 case 'a':
+                    if(me->column == 1){
+                        e = 1;
+                    }
                     left(me);
+                    if(e){
+                        me->sign = '*';
+                        return;
+                    }
                     break;
                 case 'd':
+                    if(me->column == 3){
+                        e = 1;
+                    }
                     right(me);
+                    if(e){
+                        me->sign = '*';
+                        return;
+                    }
                     break;
                 case 'c':
+                    print_board(me);
                     printf("Game paused. Press enter to continue");
                     getchar();
-                    break;
+                    me->sign = '*';
+                    return;
                 case 'x':
-                printf("game ended\n");
+                    print_board(me);
+                    printf("game ended\n");
                     exit(0);
             }
     }
@@ -222,11 +254,13 @@ int main () {
                     right(&me);
                     break;
                 case 'c':
+                    print_board(&me);
                     printf("Game paused. Press enter to continue");
                     getchar();
                     break;
                 case 'x':
-                printf("game ended\n");
+                    print_board(&me);
+                    printf("game ended\n");
                     return 0;
                 default:
                     print_board(&me);
