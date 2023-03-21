@@ -17,6 +17,7 @@ int wait_time = 1500;
 int turn = 0;
 
 typedef struct player{
+    int alive;
     int score;
     int column;
     char sign;
@@ -25,7 +26,10 @@ typedef struct player{
 char board[6][5];
 
 void print_board(player* me){
-    board[0][me->column] = (board[0][me->column] == ' ' || me->sign != '*')?me->sign:'^';
+    board[0][me->column] = (board[0][me->column] != 'X' || me->sign != '*')?me->sign:'^';
+    if(board[0][me->column] == '^'){
+        me->alive = 0;
+    }
     printf(" _____ \n");
     for (int i = 5; i >= 0; i--){
         printf("|");
@@ -65,7 +69,51 @@ void update_board(){
     generate_row();
 }
 
-int up (player* me) {
+void left (player* me) {
+    me->column -= 1;
+    print_board(me);
+    if(me->column == 0){
+        if(me->sign == '*'){
+            me->score += turn;
+            Sleep(wait_time);
+            printf("\nTurn: %d    Score: %d\n", turn, me->score);
+            if(wait_time > MIN_TIME){
+                wait_time -= turn;
+            }
+            turn++;
+            update_board();
+        }else{
+            me->sign = '*';
+            board[0][0] = ' ';
+        }
+        me->column = 1;
+        print_board(me);
+    }
+}
+
+void right (player* me) {
+    me->column += 1;
+    print_board(me);
+    if(me->column == 4){
+        if(me->sign == '*'){
+            me->score += turn;
+            Sleep(wait_time);
+            printf("\nTurn: %d    Score: %d\n", turn, me->score);
+            if(wait_time > MIN_TIME){
+                wait_time -= turn;
+            }
+            turn++;
+            update_board();
+        }else{
+            me->sign = '*';
+            board[0][4] = ' ';
+        }
+        me->column = 3;
+        print_board(me);
+    }
+}
+
+void up (player* me) {
     me->sign = '#';
     print_board(me);
     me->score += turn;
@@ -76,12 +124,29 @@ int up (player* me) {
     }
         turn++;
     update_board();
+    if (kbhit()){
+            int keystroke = getch();
+            switch (keystroke) {
+                case 'a':
+                    left(me);
+                    break;
+                case 'd':
+                    right(me);
+                    break;
+                case 'c':
+                    printf("Game paused. Press enter to continue");
+                    getchar();
+                    break;
+                case 'x':
+                printf("game ended\n");
+                    exit(0);
+            }
+    }
     me->sign = '*';
     print_board(me);
-    return board[0][me->column] != '^';
 }
 
-int down (player* me) {
+void down (player* me) {
     me->sign = '-';
     print_board(me);
     me->score += turn;
@@ -92,51 +157,30 @@ int down (player* me) {
     }
         turn++;
     update_board();
+    if (kbhit()){
+            int keystroke = getch();
+            switch (keystroke) {
+                case 'a':
+                    left(me);
+                    break;
+                case 'd':
+                    right(me);
+                    break;
+                case 'c':
+                    printf("Game paused. Press enter to continue");
+                    getchar();
+                    break;
+                case 'x':
+                printf("game ended\n");
+                    exit(0);
+            }
+    }
     me->sign = '*';
     print_board(me);
-    return board[0][me->column] != '^';
 }
-
-int left (player* me) {
-    me->column -= 1;
-    print_board(me);
-    if(me->column == 0){
-        me->score += turn;
-        Sleep(wait_time);
-        printf("\nTurn: %d    Score: %d\n", turn, me->score);
-        if(wait_time > MIN_TIME){
-            wait_time -= turn;
-        }
-        turn++;
-        update_board();
-        me->column = 1;
-        print_board(me);
-    }
-    return board[0][me->column] != '^';
-}
-
-int right (player* me) {
-    me->column += 1;
-    print_board(me);
-    if(me->column == 4){
-        me->score += turn;
-        Sleep(wait_time);
-        printf("\nTurn: %d    Score: %d\n", turn, me->score);
-        if(wait_time > MIN_TIME){
-            wait_time -= turn;
-        }
-        turn++;
-        update_board();
-        me->column = 3;
-        print_board(me);
-    }
-    return board[0][me->column] != '^';
-}
-
 
 int main () {
-    player me = {0, 2, '*'};
-    int alive = 1;
+    player me = {1, 0, 2, '*'};
     for (int i = 5; i > 0; i--){
         for (int j = 0; j < 5; j++){
             board[i][j] = ' ';
@@ -151,7 +195,7 @@ int main () {
     char isAdmin[10];
     fgets(isAdmin, 9, stdin);
     Sleep(500);
-    while(alive){
+    while(me.alive){
         me.score += turn;
         if(turn){
             Sleep(wait_time);
@@ -166,16 +210,16 @@ int main () {
             int keystroke = getch();
             switch (keystroke) {
                 case 'w':
-                    alive = up(&me);
+                    up(&me);
                     break;
                 case 's':
-                    alive = down(&me);
+                    down(&me);
                     break;
                 case 'a':
-                    alive = left(&me);
+                    left(&me);
                     break;
                 case 'd':
-                    alive = right(&me);
+                    right(&me);
                     break;
                 case 'c':
                     printf("Game paused. Press enter to continue");
@@ -185,17 +229,15 @@ int main () {
                 printf("game ended\n");
                     return 0;
                 default:
-                    alive = (board[0][me.column] == ' ');
                     print_board(&me);
             }
         } else {
-            alive = (board[0][me.column] == ' ');
             print_board(&me);
         }
-        if(!alive && !strcmp(isAdmin, "admin\n")){
+        if(!me.alive && !strcmp(isAdmin, "admin\n")){
             printf("You should be dead lol but you're an immortal admin.\nResetting timer");
             wait_time = 1500;
-            alive = 1;
+            me.alive = 1;
         }
     }
     Sleep(500);
