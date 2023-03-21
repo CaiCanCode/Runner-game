@@ -123,25 +123,14 @@ void up (player* me) {
     if (kbhit()){
             int keystroke = getch();
             switch (keystroke) {
-                int e = 0;
                 case 'a':
-                    if(me->column == 1){
-                        e = 1;
-                    }
-                    left(me);
-                    if(e){
-                        me->sign = '*';
-                        return;
+                    if(me->column != 1){
+                        me->column--;
                     }
                     break;
                 case 'd':
-                    if(me->column == 3){
-                        e = 1;
-                    }
-                    right(me);
-                    if(e){
-                        me->sign = '*';
-                        return;
+                    if(me->column != 3){
+                        me->column++;
                     }
                     break;
                 case 'c':
@@ -174,25 +163,14 @@ void down (player* me) {
     if (kbhit()){
             int keystroke = getch();
             switch (keystroke) {
-                int e = 0;
                 case 'a':
-                    if(me->column == 1){
-                        e = 1;
-                    }
-                    left(me);
-                    if(e){
-                        me->sign = '*';
-                        return;
+                    if(me->column != 1){
+                        me->column--;
                     }
                     break;
                 case 'd':
-                    if(me->column == 3){
-                        e = 1;
-                    }
-                    right(me);
-                    if(e){
-                        me->sign = '*';
-                        return;
+                    if(me->column != 3){
+                        me->column++;
                     }
                     break;
                 case 'c':
