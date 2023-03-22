@@ -13,8 +13,8 @@
 #include <time.h>
 
 const int MIN_TIME = 400;
-int wait_time = 1500;
-int turn = 0;
+int wait_time;
+int turn;
 
 typedef struct player{
     int alive;
@@ -190,69 +190,74 @@ void down (player* me) {
 }
 
 int main () {
-    player me = {1, 0, 2, '*'};
-    for (int i = 5; i > 0; i--){
-        for (int j = 0; j < 5; j++){
-            board[i][j] = ' ';
-        }
-    }
-    Sleep(500);
-    printf("Xs are obstacles, use wasd keys to avoid them.\n");
-    Sleep(500);
-    printf("You can go off the edged but you will bounce back. w ans s go under and over the square, reprectively.\n");
-    Sleep(500);
-    printf("Pressing x will exit the game, and pressing c will pause the game. \nPress enter to continue");
-    char isAdmin[10];
-    fgets(isAdmin, 9, stdin);
-    Sleep(500);
-    while(me.alive){
-        me.score += turn;
-        if(turn){
-            Sleep(wait_time);
-        }
-        printf("\nTurn: %d    Score: %d\n", turn, me.score);
-        if(wait_time > MIN_TIME){
-            wait_time -= turn;
-        }
-        turn++;
-        update_board();
-        if (kbhit()){
-            int keystroke = getch();
-            switch (keystroke) {
-                case 'w':
-                    up(&me);
-                    break;
-                case 's':
-                    down(&me);
-                    break;
-                case 'a':
-                    left(&me);
-                    break;
-                case 'd':
-                    right(&me);
-                    break;
-                case 'c':
-                    print_board(&me);
-                    printf("Game paused. Press enter to continue");
-                    getchar();
-                    break;
-                case 'x':
-                    print_board(&me);
-                    printf("game ended\n");
-                    return 0;
-                default:
-                    print_board(&me);
+    while(1){
+        turn = 0;
+        wait_time = 1500;
+        player me = {1, 0, 2, '*'};
+        for (int i = 5; i > 0; i--){
+            for (int j = 0; j < 5; j++){
+                board[i][j] = ' ';
             }
-        } else {
-            print_board(&me);
         }
-        if(!me.alive && !strcmp(isAdmin, "admin\n")){
-            printf("You should be dead lol but you're an immortal admin.\nResetting timer");
-            wait_time = 1500;
-            me.alive = 1;
+        Sleep(500);
+        printf("Xs are obstacles, use wasd keys to avoid them.\n");
+        Sleep(500);
+        printf("You can go off the edged but you will bounce back. w ans s go under and over the square, reprectively.\n");
+        Sleep(500);
+        printf("Pressing x will exit the game, and pressing c will pause the game. \nPress enter to continue");
+        char isAdmin[10];
+        fgets(isAdmin, 9, stdin);
+        Sleep(500);
+        while(me.alive){
+            me.score += turn;
+            if(turn){
+                Sleep(wait_time);
+            }
+            printf("\nTurn: %d    Score: %d\n", turn, me.score);
+            if(wait_time > MIN_TIME){
+                wait_time -= turn;
+            }
+            turn++;
+            update_board();
+            if (kbhit()){
+                int keystroke = getch();
+                switch (keystroke) {
+                    case 'w':
+                        up(&me);
+                        break;
+                    case 's':
+                        down(&me);
+                        break;
+                    case 'a':
+                        left(&me);
+                        break;
+                    case 'd':
+                        right(&me);
+                        break;
+                    case 'c':
+                        print_board(&me);
+                        printf("Game paused. Press enter to continue");
+                        getchar();
+                        break;
+                    case 'x':
+                        print_board(&me);
+                        printf("game ended\n");
+                        return 0;
+                    default:
+                        print_board(&me);
+                }
+            } else {
+                print_board(&me);
+            }
+            if(!me.alive && !strcmp(isAdmin, "admin\n")){
+                printf("You should be dead lol but you're an immortal admin.\nResetting timer");
+                wait_time = 1500;
+                me.alive = 1;
+            }
         }
+        Sleep(500);
+        printf("Game over :(\n");
+        Sleep(1500);
     }
-    Sleep(500);
-    printf("Game over :(\n");
     return 0;
 }
