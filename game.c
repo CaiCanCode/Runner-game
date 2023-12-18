@@ -5,16 +5,19 @@
     A cute little game that just prints in your command prompt but I want to turn it into a real game :)
     Inspired by Subway Surfer
 */
-#include <stdio.h>
-#include <conio.h>
-#include <windows.h>
+//#include <stdio.h>
+#include <ncurses.h>
+#include <unistd.h>
 #include <string.h>
 #include <stdlib.h>
 #include <time.h>
 
+
 const int MIN_TIME = 400;
 int wait_time;
 int turn;
+int max_row;
+int max_col;
 
 typedef struct player{
     int alive;
@@ -30,13 +33,12 @@ void print_board(player* me){
     if(board[0][me->column] == '^'){
         me->alive = 0;
     }
-    printf(" _____ \n");
     for (int i = 5; i >= 0; i--){
-        printf("|");
+        mvprintw(i + 6, 0, "|");
         for (int j = 0; j < 5; j++){
-            printf("%c", board[i][j]);
+            mvprintw(11 - i, j + 1, "%c", board[i][j]);
         }
-        printf("|\n");
+        mvprintw(i + 6, 6, "|\n");
     }
 }
 
@@ -77,11 +79,12 @@ void left (player* me) {
             me->sign = '*';
         }
         me->score += turn;
-        Sleep(wait_time);
-        printf("\nTurn: %d    Score: %d\n", turn, me->score);
+        napms(wait_time);
+        mvprintw(4, 0, "\nTurn: %d    Score: %d\n", turn, me->score);
         if(wait_time > MIN_TIME){
             wait_time -= turn;
         }
+        halfdelay(wait_time/100);
         turn++;
         update_board();
         me->column = 1;
@@ -97,11 +100,12 @@ void right (player* me) {
             me->sign = '*';
         }
         me->score += turn;
-        Sleep(wait_time);
-        printf("\nTurn: %d    Score: %d\n", turn, me->score);
+        napms(wait_time);
+        mvprintw(4, 0, "\nTurn: %d    Score: %d\n", turn, me->score);
         if(wait_time > MIN_TIME){
             wait_time -= turn;
         }
+        halfdelay(wait_time/100);
         turn++;
         update_board();
         me->column = 3;
@@ -113,14 +117,15 @@ void up (player* me) {
     me->sign = '#';
     print_board(me);
     me->score += turn;
-    Sleep(wait_time);
-    printf("\nTurn: %d    Score: %d\n", turn, me->score);
+    napms(MIN_TIME);
+    mvprintw(4, 0, "\nTurn: %d    Score: %d\n", turn, me->score);
     if(wait_time > MIN_TIME){
         wait_time -= turn;
     }
-        turn++;
+    halfdelay(wait_time/100);
+    turn++;
     update_board();
-    if (kbhit()){
+    if (1){
             int keystroke = getch();
             switch (keystroke) {
                 case 'a':
@@ -135,13 +140,16 @@ void up (player* me) {
                     break;
                 case 'c':
                     print_board(me);
-                    printf("Game paused. Press enter to continue");
-                    getchar();
+                    napms(500);
+                    mvprintw(13, 0, "Game paused. Press any key to continue");
+                    while(getch() != ERR){} //clear
+                    while(getch() == ERR){} //wait
+                    mvprintw(13, 0, "                                         ");
                     me->sign = '*';
                     return;
                 case 'x':
                     print_board(me);
-                    printf("game ended\n");
+                    mvprintw(13, 0, "game ended\n");
                     exit(0);
             }
     }
@@ -153,14 +161,15 @@ void down (player* me) {
     me->sign = '-';
     print_board(me);
     me->score += turn;
-    Sleep(wait_time);
-    printf("\nTurn: %d    Score: %d\n", turn, me->score);
+    napms(MIN_TIME);
+    mvprintw(4, 0, "\nTurn: %d    Score: %d\n", turn, me->score);
     if(wait_time > MIN_TIME){
         wait_time -= turn;
     }
-        turn++;
+    halfdelay(wait_time/100);    
+    turn++;
     update_board();
-    if (kbhit()){
+    if (1){
             int keystroke = getch();
             switch (keystroke) {
                 case 'a':
@@ -175,13 +184,15 @@ void down (player* me) {
                     break;
                 case 'c':
                     print_board(me);
-                    printf("Game paused. Press enter to continue");
-                    getchar();
+                    napms(500);
+                    mvprintw(13, 0, "Game paused. Press any key to continue");
+                    while(getch() != ERR){} //clear
+                    while(getch() == ERR){} //wait
                     me->sign = '*';
                     return;
                 case 'x':
                     print_board(me);
-                    printf("game ended\n");
+                    mvprintw(13, 0, "game ended\n");
                     exit(0);
             }
     }
@@ -190,6 +201,12 @@ void down (player* me) {
 }
 
 int main () {
+
+    initscr();
+    noecho();
+    halfdelay(15);
+    getmaxyx(stdscr,max_row,max_col);	
+
     while(1){
         turn = 0;
         wait_time = 1500;
@@ -199,27 +216,29 @@ int main () {
                 board[i][j] = ' ';
             }
         }
-        Sleep(500);
-        printf("Xs are obstacles, use wasd keys to avoid them.\n");
-        Sleep(500);
-        printf("You can go off the edged but you will bounce back. w ans s go under and over the square, reprectively.\n");
-        Sleep(500);
-        printf("Pressing x will exit the game, and pressing c will pause the game. \nPress enter to continue");
-        char isAdmin[10];
-        fgets(isAdmin, 9, stdin);
-        Sleep(500);
+        mvprintw(0,0, "                                                                                                                 ");
+        mvprintw(0,1, "                                                                                                                 ");
+        mvprintw(0,2, "                                                                                                                 ");
+        napms(500);
+        mvprintw(0, 0, "Xs are obstacles, use wasd keys to avoid them.\n");
+        napms(500);
+        mvprintw(1, 0, "You can go off the edged but you will bounce back. w ans s go under and over the square, reprectively.\n");
+        napms(500);
+        mvprintw(2, 0, "Pressing x will exit the game, and pressing c will pause the game. \nPress any key to continue");
+        while(getch() == ERR){} //wait
         while(me.alive){
             me.score += turn;
             if(turn){
-                Sleep(wait_time);
+                napms(MIN_TIME);
             }
-            printf("\nTurn: %d    Score: %d\n", turn, me.score);
+            mvprintw(4, 0, "\nTurn: %d    Score: %d\n", turn, me.score);
             if(wait_time > MIN_TIME){
                 wait_time -= turn;
             }
+            halfdelay(wait_time/100);
             turn++;
             update_board();
-            if (kbhit()){
+            if (1){
                 int keystroke = getch();
                 switch (keystroke) {
                     case 'w':
@@ -236,12 +255,15 @@ int main () {
                         break;
                     case 'c':
                         print_board(&me);
-                        printf("Game paused. Press enter to continue");
-                        getchar();
+                        napms(500);
+                        mvprintw(13, 0, "Game paused. Press any key to continue");
+                        while(getch() != ERR){} //clear
+                        while(getch() == ERR){} //wait
+                        mvprintw(13, 0, "                                           ");
                         break;
                     case 'x':
                         print_board(&me);
-                        printf("game ended\n");
+                        mvprintw(13, 0, "game ended\n");
                         return 0;
                     default:
                         print_board(&me);
@@ -249,15 +271,12 @@ int main () {
             } else {
                 print_board(&me);
             }
-            if(!me.alive && !strcmp(isAdmin, "admin\n")){
-                printf("You should be dead lol but you're an immortal admin.\nResetting timer");
-                wait_time = 1500;
-                me.alive = 1;
-            }
         }
-        Sleep(500);
-        printf("Game over :(\n");
-        Sleep(1500);
+        napms(500);
+        mvprintw(13, 0, "Game over :(\n");
+        napms(1500);
+        mvprintw(13, 0, "                            ");
+        while(getch() != ERR){} //clear
     }
     return 0;
 }
